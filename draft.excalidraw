@@ -1,0 +1,22 @@
+src/
+└── features/
+    ├── events/
+    │   ├── domain/             # Le Cœur du métier 'Event'
+    │   │   ├── Event.js          # Entité pure (pas de logique DB)
+    │   │   ├── EventRepository.js  # Port de Sortie (Interface que le domaine appelle)
+    │   │   └── EventManagementService.js # Logique métier (ex: validation avant publication)
+    │   │
+    │   ├── inbound/            # Les Adaptateurs d'Entrée
+    │   │   ├── EventController.js  # Le Contrôleur REST
+    │   │   └── EventApiMapper.js   # Mapper DTOs <-> Entités
+    │   │
+    │   └── outbound/           # Les Adaptateurs de Sortie
+    │       ├── adapter/        # L'implémentation du Port de Sortie
+    │       │   └── EventSqlAdapter.js # Implémente EventRepository (contient le code SQL/ORM)
+    │       └── models/         # Les modèles spécifiques à la persistance (DAO/Schema)
+    │           └── EventDbModel.js
+    │
+    └── users/
+        ├── domain/           # Entité User, interfaces de Repository, logique de Rôle
+        ├── inbound/          # Contrôleurs d'authentification/profils
+        └── outbound/         # Implémentation du UserRepository, connexion à l'identité
