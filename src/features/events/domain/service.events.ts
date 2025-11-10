@@ -39,7 +39,7 @@ export class EventService {
 
     async createEvent(userId: string,event: Event){
 
-        if (!this.hasRequiredRole(userId, "admin")) {
+        if (!await this.hasRequiredRole(userId, "admin")) {
             throw new Error('Unauthorized');
 
         }
@@ -65,7 +65,7 @@ export class EventService {
 
     async updateEvent(userId: string,event: Event, id: string){
 
-        if (!this.hasRequiredRole(userId, "admin")) {
+        if (!await this.hasRequiredRole(userId, "admin")) {
             throw new Error('Unauthorized');
 
         }
@@ -79,15 +79,11 @@ export class EventService {
 
     async deleteEvent(userId: string, id: string){
 
-        if (!this.hasRequiredRole(userId, "admin")) {
+        if (!await this.hasRequiredRole(userId, "admin")) {
             throw new Error('Unauthorized');
-
-        }else{ 
-
-            return this.repository.delete(id);
-
         }
 
+        this.repository.delete(id);
     }
 
 }

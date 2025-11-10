@@ -13,9 +13,13 @@
   "scripts": {
     "dev": "bun run src/index",
     "test:coverage": "bun test --coverage",
-    "test": "bun test"
+    "test": "bun test",
+    "db:push": " drizzle-kit push",
+    "db:generate": " drizzle-kit generate",
+    "db:migrate": " drizzle-kit migrate"
   },
   "dependencies": {
+    "@libsql/client": "^0.15.15",
     "@types/bcrypt": "^6.0.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/dotenv": "^8.2.3",
@@ -27,8 +31,11 @@
     "bcryptjs": "^3.0.2",
     "brcypt": "^1.0.1",
     "dotenv": "^17.2.3",
+    "drizzle-kit": "^0.31.6",
+    "drizzle-orm": "^0.44.7",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "resend": "^6.4.0",
     "supertest": "^7.1.4",
     "uuid": "^13.0.0",
     "zod": "^4.1.12"

@@ -4,15 +4,18 @@ import { type UserRepository } from "./repository.users";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { type AuthService } from "../../../lib/port.auth"; 
+import type { EmailSender } from "../../messaging/domain/email.model";
+
 
 export class UserService {
   private repository: UserRepository;
   private authService: AuthService;
   private readonly saltRounds = 10;
-
-  constructor(repository: UserRepository, authService: AuthService) {
+  private emailSender: EmailSender; 
+  constructor(repository: UserRepository, authService: AuthService, emailSender: EmailSender) {
     this.repository = repository;
     this.authService = authService;
+    this.emailSender = emailSender;
   }
 
   async createUser(user: User): Promise<User> {
@@ -21,17 +24,29 @@ export class UserService {
       throw new Error("User already exists");
     }
 
+    // Hash password before storing
     const hashedPassword = await bcrypt.hash(user.password, this.saltRounds);
-    const newUser = new User({
-      user_id: crypto.randomUUID(),
+    
+    // Create new User entity with hashed password and required fields
+    const userWithHashedPassword = new User({
+      user_id: user.id || crypto.randomUUID(),
       email: user.email,
       username: user.username,
       role: user.role,
       password: hashedPassword,
-      createdAt: new Date(),
+      createdAt: user.createdAt || new Date(),
     });
 
-    return this.repository.create(newUser);
+    const created = await this.repository.create(userWithHashedPassword);
+    
+    await this.emailSender.sendEmail({
+      from: "noreply@notifications.edev-ca.com",
+      to: user.email,
+      subject: "Welcome on the events App",
+      message: "Good Morning, we are writing to you to confirm that your account has been created successfully."
+    });
+    return created;
+   
   }
 
   async loginUser(email: string, password: string): Promise<string> {
@@ -65,8 +80,29 @@ export class UserService {
     return this.repository.findAll();
   }
 
-  async updateUser(user: User, id: string): Promise<User | null> {
-    return this.repository.update(user, id);
+  async updateUser(userData: Partial<User>, id: string): Promise<User | null> {
+    const existing = await this.repository.findById(id);
+    if (!existing) {
+      return null;
+    }
+
+    // Hash password if it's being updated
+    let hashedPassword = existing.password;
+    if (userData.password) {
+      hashedPassword = await bcrypt.hash(userData.password, this.saltRounds);
+    }
+
+    // Create updated user entity
+    const updatedUser = new User({
+      user_id: existing.id,
+      email: userData.email ?? existing.email,
+      username: userData.username ?? existing.username,
+      role: userData.role ?? existing.role,
+      password: hashedPassword,
+      createdAt: existing.createdAt,
+    });
+
+    return this.repository.update(updatedUser, id);
   }
 
   async deleteUser(id: string): Promise<boolean> {

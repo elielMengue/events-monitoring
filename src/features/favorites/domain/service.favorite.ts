@@ -26,8 +26,14 @@ export class FavoriteService {
             throw new Error('Event not found');
         }
 
+        // Check if favorite already exists
+        const existingFavorite = await this.repository.findByUserAndEvent(userId, eventId);
+        if(existingFavorite){
+            throw new Error('Favorite already exists');
+        }
+
         const favorite = new Favorite({
-            favorite_id: '', 
+            favorite_id: '',
             user_id: userId,
             event_id: eventId
         });

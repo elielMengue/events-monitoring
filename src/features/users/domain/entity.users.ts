@@ -42,22 +42,13 @@ export class User {
   }
 
   toJSON() {
-    const { password, ...rest } = this.props;
-    return rest;
+    return {
+      user_id: this.props.user_id,
+      email: this.props.email,
+      username: this.props.username,
+      role: this.props.role,
+      createdAt: this.props.createdAt,
+    };
   }
 
-  withUpdatedPassword(newHashedPassword: string): User {
-    return new User({ ...this.props, password: newHashedPassword });
-  }
-
-  withUpdatedProps(partial: Partial<Omit<UserEntry, 'user_id' | 'createdAt'>>): User {
-    return new User({
-      ...this.props,
-      ...partial,
-    });
-  }
-
-  get raw(): UserEntry {
-    return { ...this.props };
-  }
 }
