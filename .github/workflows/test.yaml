@@ -18,6 +18,6 @@ jobs:
         run: bun install
       - name: Run tests
         run: bun test
-        
         env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          # JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_SECRET: 59c7a40b9f7eedbfe4ee82dcf065ca70
